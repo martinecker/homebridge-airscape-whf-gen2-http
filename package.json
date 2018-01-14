@@ -1,0 +1,27 @@
+{
+  "name": "homebridge-airscape-whf-gen2-http",
+  "version": "1.0.0",
+  "description": "A homebridge plugin to control an AirScape Whole House fan supporting the AirScape Gen2 Controls HTTP interface, such as the AirScape WHF 4.4e. See http://airscapefans.com/. For homebridge see https://github.com/nfarina/homebridge",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.4.32"
+  },
+  "dependencies": {
+    "request": "^2.83.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "airscape",
+    "gen2",
+    "whole house fan",
+    "fan"
+  ],
+  "author": "Martin Ecker",
+  "license": "ISC"
+}
