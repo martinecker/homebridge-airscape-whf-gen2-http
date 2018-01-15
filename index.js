@@ -65,7 +65,7 @@ AirScapeFanAccessory.prototype._updateState = async function () {
             ", model " + newState.model + ", software version " + newState.softwareVersion + ", MAC address " + newState.macAddress + 
             ", speed " + newState.speed + ", areDoorsMoving " + (newState.areDoorsMoving ? 'yes' : 'no') + 
             ", time remaining " + newState.timeRemaining + ", temp inside " + newState.temperatureInside + ", temp outside " + newState.temperatureOutside +
-            ", temp attic " + newState.tempartureAttic);
+            ", temp attic " + newState.temperatureAttic);
 
         this.fanService.getCharacteristic(Characteristic.On).updateValue(newState.speed > 0, null, "polling");
         this.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(convertSpeedToPercent(newState.speed), null, "polling");
