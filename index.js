@@ -32,6 +32,10 @@ function convertPercentToSpeed(speedPercent) {
     return Math.round(speedPercent / 100 * 7);
 }
 
+function convertFahrenheitToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 0.5556;
+}
+
 function AirScapeFanAccessory(log, config) {
     this.log = log;
     this.config = config;
@@ -45,6 +49,7 @@ function AirScapeFanAccessory(log, config) {
     this.ip = config.ip;
     this.name = config.name;
     this.pollingIntervalMs = getConfigIntWithDefaultAndRange(config.pollingIntervalMs, 15000, 250, 600000); // clamp between 250 ms and 10 minutes, default to polling every 15 seconds
+    this.hasTSP = config.hasTSP == 'true' || config.hasTSP == '1';
 
     this.airScape = new AirScapeGen2(this.ip);
 }
@@ -142,6 +147,42 @@ AirScapeFanAccessory.prototype.setRotationSpeed = async function (speedPercent, 
     }
 };
 
+AirScapeFanAccessory.prototype.getTemperatureInside = async function (callback) {
+    try {
+        const tempFahrenheit = await this.airScape.getTemperatureInside();
+        const tempCelsius = convertFahrenheitToCelsius(tempFahrenheit);
+        this.log('AirScape WHF inside temperature is ' + tempFahrenheit + 'F, ' + tempCelsius + 'C');
+        callback(null, tempCelsius);
+    } catch (error) {
+        this.log("AirScape WHF couldn't get inside temperature: " + error);
+        callback(error, 0);
+    }
+};
+
+AirScapeFanAccessory.prototype.getTemperatureOutside = async function (callback) {
+    try {
+        const tempFahrenheit = await this.airScape.getTemperatureOutside();
+        const tempCelsius = convertFahrenheitToCelsius(tempFahrenheit);
+        this.log('AirScape WHF outside temperature is ' + tempFahrenheit + 'F, ' + tempCelsius + 'C');
+        callback(null, tempCelsius);
+    } catch (error) {
+        this.log("AirScape WHF couldn't get outside temperature: " + error);
+        callback(error, 0);
+    }
+};
+
+AirScapeFanAccessory.prototype.getTemperatureAttic = async function (callback) {
+    try {
+        const tempFahrenheit = await this.airScape.getTemperatureAttic();
+        const tempCelsius = convertFahrenheitToCelsius(tempFahrenheit);
+        this.log('AirScape WHF attic temperature is ' + tempFahrenheit + 'F, ' + tempCelsius + 'C');
+        callback(null, tempCelsius);
+    } catch (error) {
+        this.log("AirScape WHF couldn't get attic temperature: " + error);
+        callback(error, 0);
+    }
+};
+
 AirScapeFanAccessory.prototype.getServices = function () {
     this.informationService = new Service.AccessoryInformation();
     this.informationService
@@ -161,8 +202,33 @@ AirScapeFanAccessory.prototype.getServices = function () {
         .on('get', this.getRotationSpeed.bind(this))
         .on('set', this.setRotationSpeed.bind(this));
 
+    if (this.hasTSP) {
+        this.temperatureInsideService = new Service.TemperatureSensor(this.name + " Inside Temperature", this.name + " Inside Temperature");
+        this.temperatureInsideService
+            .getCharacteristic(Characteristic.CurrentTemperature)
+            .setProps({minValue: -100, maxValue: 100})
+            .on('get', this.getTemperatureInside.bind(this));
+
+        this.temperatureOutsideService = new Service.TemperatureSensor(this.name + " Outside Temperature", this.name + " Outside Temperature");
+        this.temperatureOutsideService
+            .getCharacteristic(Characteristic.CurrentTemperature)
+            .setProps({minValue: -100, maxValue: 100})
+            .on('get', this.getTemperatureOutside.bind(this));
+
+        this.temperatureAtticService = new Service.TemperatureSensor(this.name + " Attic Temperature", this.name + " Attic Temperature");
+        this.temperatureAtticService
+            .getCharacteristic(Characteristic.CurrentTemperature)
+            .setProps({minValue: -100, maxValue: 100})
+            .on('get', this.getTemperatureAttic.bind(this));
+    }
+
     this.pollingTimout = setTimeout(this._updateState.bind(this), 1);
 
-    const services = [this.informationService, this.fanService];
+    var services = [this.informationService, this.fanService];
+    if (this.hasTSP) {
+        services.push(this.temperatureInsideService);
+        services.push(this.temperatureOutsideService);
+        services.push(this.temperatureAtticService);
+    }
     return services;
 };
