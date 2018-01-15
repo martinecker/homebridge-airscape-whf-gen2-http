@@ -2,12 +2,12 @@
 
 Developed by Martin Ecker in 2018.
 
-This is a [Homebridge](https://github.com/nfarina/homebridge) plugin for [AirScape](http://www.airscapefans.com/) whole house fans with [2nd generation controls](https://usa.denon.com/us/product/hometheater/receivers/avr3808ci) via HTTP that enables Apple-HomeKit/Siri control of the fan speed. If you have the [TSP Temperature Sensor Package](http://www.airscapefans.com/learn-about/tsp-explained.php) this plugin also provides temperature sensors for inside, outside, and attic temperatures.
+This is a [Homebridge](https://github.com/nfarina/homebridge) plugin for [AirScape](http://www.airscapefans.com/) whole house fans with [2nd generation controls](http://www.airscapefans.com/learn-about/gen2-explained.php) via HTTP that enables Apple-HomeKit/Siri control of the fan speed. If you have the [TSP Temperature Sensor Package](http://www.airscapefans.com/learn-about/tsp-explained.php) this plugin also provides temperature sensors for inside, outside, and attic temperatures.
 
 ## Installation
 
 1. Install homebridge using: `sudo npm install -g homebridge`
-1. Install this plugin using: `sudo npm install -g homebridge-denon-avr3808ci-http`
+1. Install this plugin using: `sudo npm install -g homebridge-airscape-whf-gen2-http`
 1. Update your configuration file as described below.
 1. Restart homebridge. If you're running it as systemd service this is typically done via `sudo systemctl restart homebridge`.
 
